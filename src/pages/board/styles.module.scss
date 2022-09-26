@@ -1,0 +1,120 @@
+$foreground-color: lighten($app-primary-dark, 4);
+$input-border-color: #424242;
+
+:export {
+  dangerColor: $app-danger;
+}
+
+.boardContainer {
+  max-width: 1120px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: $app-primary-dark;
+  border-radius: 0.6rem;
+
+  form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    input {
+      flex: 1;
+      height: 4rem;
+      background-color: $foreground-color;
+      border-radius: 0.6rem;
+      border: 1px solid $input-border-color;
+      padding: 1rem 1.5rem;
+      color: #FFF;
+      outline: none;
+
+      &:focus {
+        box-shadow: 0 0 0 2px $app-secondary;
+      }
+    }
+
+    button {
+      height: 4rem;
+      border: none;
+      background-color: $app-secondary;
+      padding: 1rem 2rem;
+      border-radius: 0.6rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.tasksList {
+  h1 {
+    color: #FFF;
+    margin: 2rem 0;
+  }
+}
+
+.task {
+  background-color: $foreground-color;
+  padding: 1rem;
+  border-radius: 0.6rem;
+
+  p {
+    color: $app-background;
+    line-height: 150%;
+  }
+
+  .taskInfo {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+
+    span {
+      color: $app-secondary;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  .taskActions {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      border: none;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #FFF;
+
+      &:hover {
+        color: darken(#FFF, 20);
+      }
+    }
+  }
+}
+
+.vipContainer {
+  max-width: 1120px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: $app-primary-dark;
+  border-radius: 0.6rem;
+
+  h2 {
+    color: $app-secondary;
+    font-size: 2rem;
+  }
+
+  div {
+    margin-top: 1rem;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
