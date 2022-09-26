@@ -1,5 +1,19 @@
-@mixin screen-md {
-  @media screen and (max-width: 768px) {
-    @content;
+$devices: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  2xl: 1536px
+);
+
+@mixin media ($deviceSize, $direction: down) {
+  @if $direction == down {
+    @media screen and (max-width: map-get($devices, $deviceSize)) {
+      @content;
+    }
+  } @else {
+    @media screen and (min-width: map-get($devices, $deviceSize)) {
+      @content;
+    }
   }
 }

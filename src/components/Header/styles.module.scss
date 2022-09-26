@@ -1,0 +1,29 @@
+.headerContainer {
+  background-color: $app-primary;
+}
+
+.headerContent {
+  height: 6.6rem;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;justify-content: space-between;
+  margin: 0 auto;
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    img {
+      height: 5rem;
+      margin-right: 1.5rem;
+      cursor: pointer;
+    }
+
+    a {
+      color: #fff;
+      padding: .5rem 1rem;
+      cursor: pointer;
+    }
+  }
+}

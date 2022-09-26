@@ -1,0 +1,28 @@
+:export {
+  secondaryColor: $app-secondary;
+  greyColor: $app-grey;
+}
+
+.signInButton {
+  height: 3.5rem;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 2rem;
+  border-radius: 0.6rem;
+  color: #FFF;
+  font-weight: bold;
+  transition: color 200ms;
+
+  &:hover {
+    color: darken(#FFF, 15);
+  }
+
+  img {
+    width: 35px;
+    border-radius: 50%;
+  }
+}

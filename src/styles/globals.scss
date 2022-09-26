@@ -7,7 +7,7 @@
 html {
   font-size: 62.5%;
 
-  @include screen-md {
+  @include media(md) {
     font-size: 56%;
   }
 }
