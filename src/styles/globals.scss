@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+
+  @include screen-md {
+    font-size: 56%;
+  }
+}
+
+body {
+  background-color: $app-background;
+}
+
+body, input, textarea, select, button {
+  font: 400 1.6rem sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
