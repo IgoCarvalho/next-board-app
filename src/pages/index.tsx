@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 
@@ -46,39 +46,6 @@ const Home: NextPage = () => {
                 height={50}
               />
             </li>
-            <li>
-              <Image
-                src="https://avatars.githubusercontent.com/u/67937973?v=4"
-                alt="Imagem de apoiador"
-                width={50}
-                height={50}
-              />
-            </li>
-            <li>
-              <Image
-                src="https://avatars.githubusercontent.com/u/42634011?v=4"
-                alt="Imagem de apoiador"
-                width={50}
-                height={50}
-              />
-            </li>
-            <li>
-              <Image
-                src="https://avatars.githubusercontent.com/u/42634011?v=4"
-                alt="Imagem de apoiador"
-                width={50}
-                height={50}
-              />
-            </li>
-            <li>
-              <Image
-                src="https://avatars.githubusercontent.com/u/42634011?v=4"
-                alt="Imagem de apoiador"
-                width={50}
-                height={50}
-              />
-            </li>
-
           </ul>
         </section>
       </main>
@@ -87,3 +54,10 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
+export const getStaticProps: GetStaticProps = () => {
+  return {
+    props: {},
+    revalidate: 60 * 60
+  }
+}
