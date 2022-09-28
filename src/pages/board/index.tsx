@@ -1,14 +1,18 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
-import { addDoc } from 'firebase/firestore'
+import { addDoc, getDocs, orderBy, query, Timestamp, where } from 'firebase/firestore'
+import { format } from 'date-fns'
 
 import { createCollection } from '../../services/firebase'
 
 import { SupportButton } from '../../components/SupportButton'
 
 import styles from './styles.module.scss'
+import { getToken } from 'next-auth/jwt'
 
 interface Task {
   id: string
@@ -18,9 +22,13 @@ interface Task {
   task: string
 }
 
-function Board() {
+interface BoardProps {
+  data: string
+}
+
+function Board({ data }: BoardProps) {
   const [taskInput, setTaskInput] = useState('')
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<Task[]>(JSON.parse(data) ?? [])
 
   const { data: session } = useSession()
 
@@ -61,6 +69,10 @@ function Board() {
     }
   }
 
+  function formatDate(date: Date) {
+    return format(new Date(date), 'dd MMMM yyyy')
+  }
+
   return (
     <>
       <Head>
@@ -80,31 +92,36 @@ function Board() {
         </form>
 
         <section className={styles.tasksList}>
-          <h1>Você tem 2 tarefas!</h1>
+          <h1>Você tem {tasks.length} {tasks.length === 1 ? 'tarefa!' : 'tarefas!'}</h1>
 
-          <article className={styles.task}>
-            <p>Aprender criar projetos usando Next JS e aplicando firebase como back.</p>
+          {
+            tasks.map((task) => (
+              <article key={task.id} className={styles.task}>
+                <Link href={`/board/${task.id}`}>
+                  <p>{ task.task }</p>
+                </Link>
 
-            <div className={styles.taskInfo}>
-              <span>
-                <FiCalendar />
-                <time>17 de julho 2022</time>
-              </span>
+                <div className={styles.taskInfo}>
+                  <span>
+                    <FiCalendar />
+                    <time>{ formatDate(task.created) }</time>
+                  </span>
 
-              <div className={styles.taskActions}>
-                <button>
-                  <FiEdit2 size={20} />
-                  Editar
-                </button>
-                <button>
-                  <FiTrash2 size={20} color={styles.dangerColor} />
-                  Excluir
-                </button>
-              </div>
-            </div>
+                  <div className={styles.taskActions}>
+                    <button>
+                      <FiEdit2 size={20} />
+                      Editar
+                    </button>
+                    <button>
+                      <FiTrash2 size={20} color={styles.dangerColor} />
+                      Excluir
+                    </button>
+                  </div>
+                </div>
 
-          </article>
-
+              </article>
+            ))
+          }
         </section>
 
       </main>
@@ -125,3 +142,18 @@ function Board() {
 }
 
 export default Board
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const token = await getToken({ req })
+
+  const taskCollection = createCollection<Omit<Task, 'id'>>('tasks')
+  const tasksSnap = await getDocs(query(taskCollection, where('userId', '==', token?.sub), orderBy('created', 'asc')))
+
+  const tasksData: Task[] = tasksSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, created: (doc.data().created as unknown as Timestamp).toDate()}))
+
+  return {
+    props: {
+      data: JSON.stringify(tasksData)
+    }
+  }
+}
