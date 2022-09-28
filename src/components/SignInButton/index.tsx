@@ -40,7 +40,7 @@ export function SignInButton() {
       onClick={doLogOut}
     >
       <img
-        src="https://avatars.githubusercontent.com/u/42634011?v=4"
+        src={session.user?.image ?? "https://avatars.githubusercontent.com/u/42634011?v=4"}
         alt="User profile"
       />
       Olá { session.user?.name }
