@@ -1,10 +1,10 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
-import { addDoc, getDocs, orderBy, query, Timestamp, where } from 'firebase/firestore'
+import { addDoc, deleteDoc, doc, getDocs, orderBy, query, Timestamp, where } from 'firebase/firestore'
 import { format } from 'date-fns'
 
 import { createCollection } from '../../services/firebase'
@@ -32,6 +32,8 @@ function Board({ data }: BoardProps) {
 
   const { data: session } = useSession()
 
+  const taskCollection = useMemo(() => createCollection<Omit<Task, 'id'>>('tasks'), [])
+
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     setTaskInput(e.target.value)
   }
@@ -53,7 +55,6 @@ function Board({ data }: BoardProps) {
     }
 
     try {
-      const taskCollection = createCollection<Omit<Task, 'id'>>('tasks')
       const docRef = await addDoc(taskCollection, taskData)
 
       const createdTaskData: Task = {
@@ -67,6 +68,24 @@ function Board({ data }: BoardProps) {
     } catch (error) {
       console.log('DEU ALGO ERRADO: ', error)
     }
+  }
+
+  function handleDeleteTask(taskId: string) {
+    return async () => {
+      try {
+        await deleteDoc(doc(taskCollection, taskId))
+        removeTaskFromState(taskId)
+        console.log(`TASK [${taskId}] REMOVIDA:`)
+      } catch (error) {
+        console.log(`ERRO AO REMOVER [${taskId}]:`, error)
+      }
+    }
+  }
+
+  function removeTaskFromState(taskId: string) {
+    const filteredTasks = tasks.filter((t) => t.id !== taskId)
+
+    setTasks(filteredTasks)
   }
 
   function formatDate(date: Date) {
@@ -112,7 +131,7 @@ function Board({ data }: BoardProps) {
                       <FiEdit2 size={20} />
                       Editar
                     </button>
-                    <button>
+                    <button onClick={handleDeleteTask(task.id)}>
                       <FiTrash2 size={20} color={styles.dangerColor} />
                       Excluir
                     </button>
