@@ -50,8 +50,12 @@ $input-border-color: #424242;
 .tasksList {
   h1 {
     color: #FFF;
-    margin: 2rem 0;
+    margin: 2rem 0 1rem;
   }
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .task {
@@ -62,6 +66,7 @@ $input-border-color: #424242;
   p {
     color: $app-background;
     line-height: 150%;
+    cursor: pointer;
   }
 
   .taskInfo {
