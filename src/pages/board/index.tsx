@@ -2,9 +2,9 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import Head from 'next/head'
 import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
-import { addDoc, collection } from 'firebase/firestore'
+import { addDoc } from 'firebase/firestore'
 
-import { database } from '../../services/firebase'
+import { createCollection } from '../../services/firebase'
 
 import { SupportButton } from '../../components/SupportButton'
 
@@ -45,7 +45,8 @@ function Board() {
     }
 
     try {
-      const docRef = await addDoc(collection(database, 'tasks'), taskData)
+      const taskCollection = createCollection<Omit<Task, 'id'>>('tasks')
+      const docRef = await addDoc(taskCollection, taskData)
 
       const createdTaskData: Task = {
         ...taskData,

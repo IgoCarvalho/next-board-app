@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import { collection, CollectionReference, getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,7 +17,12 @@ if (!getApps().length) {
 const app = getApp()
 const database = getFirestore(app)
 
+function createCollection<T>(collectionName: string) {
+  return collection(database, collectionName) as CollectionReference<T>
+}
+
 export {
   app,
-  database
+  database,
+  createCollection
 }
