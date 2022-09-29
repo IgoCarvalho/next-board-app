@@ -3,6 +3,7 @@ $input-border-color: #424242;
 
 :export {
   dangerColor: $app-danger;
+  successColor: $app-success;
 }
 
 .boardContainer {
@@ -11,6 +12,13 @@ $input-border-color: #424242;
   padding: 2rem;
   background-color: $app-primary-dark;
   border-radius: 0.6rem;
+
+  > span {
+    color: $app-secondary;
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
 
   form {
     display: flex;
@@ -43,6 +51,12 @@ $input-border-color: #424242;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    button.delete {
+      background-color: $app-danger;
+    }
+    button.save {
+      background-color: $app-success;
     }
   }
 }

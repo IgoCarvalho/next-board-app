@@ -2,9 +2,9 @@ import { ChangeEvent, FormEvent, useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
+import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2, FiX, FiCheck } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
-import { addDoc, deleteDoc, doc, getDocs, orderBy, query, Timestamp, where } from 'firebase/firestore'
+import { addDoc, deleteDoc, doc, getDocs, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore'
 import { format } from 'date-fns'
 
 import { createCollection } from '../../services/firebase'
@@ -29,6 +29,7 @@ interface BoardProps {
 function Board({ data }: BoardProps) {
   const [taskInput, setTaskInput] = useState('')
   const [tasks, setTasks] = useState<Task[]>(JSON.parse(data) ?? [])
+  const [updatingTask, setUpdatingTask] = useState<Task | null>(null)
 
   const { data: session } = useSession()
 
@@ -44,6 +45,23 @@ function Board({ data }: BoardProps) {
     if (!taskInput.trim()) {
       alert('Preencha com alguma tarefa!')
       setTaskInput('')
+      return
+    }
+
+    if (updatingTask) {
+
+      try {
+        await updateDoc(doc(taskCollection, updatingTask.id), { task: taskInput })
+        console.log(`TASK [${updatingTask.id}] ATUALIZADA:`)
+
+        updateTasksState(updatingTask.id, taskInput)
+        setTaskInput('')
+        setUpdatingTask(null)
+
+      } catch (error) {
+        console.log(`ERRO AO ATUALIZAR [${updatingTask.id}]:`, error)
+      }
+
       return
     }
 
@@ -88,6 +106,30 @@ function Board({ data }: BoardProps) {
     setTasks(filteredTasks)
   }
 
+  function handleEditTask(task: Task) {
+    return () => {
+      setTaskInput(task.task)
+      setUpdatingTask(task)
+    }
+  }
+
+  function updateTasksState(taskId: string, taskText: string) {
+    const updatedTasks = tasks.map((t) => {
+      if (t.id === taskId) {
+        return { ...t, task: taskText }
+      }
+
+      return t
+    })
+
+    setTasks(updatedTasks)
+  }
+
+  function handleCancelEditTask() {
+    setTaskInput('')
+    setUpdatingTask(null)
+  }
+
   function formatDate(date: Date) {
     return format(new Date(date), 'dd MMMM yyyy')
   }
@@ -98,6 +140,9 @@ function Board({ data }: BoardProps) {
         <title>Minhas tarefas - Board</title>
       </Head>
       <main className={styles.boardContainer}>
+
+        { updatingTask && (<span>Você está editando uma tarefa!</span>)}
+
         <form onSubmit={handleFormSubmit}>
           <input
             type="text"
@@ -105,9 +150,29 @@ function Board({ data }: BoardProps) {
             value={taskInput}
             onChange={handleInputChange}
           />
-          <button type="submit">
-            <FiPlus size={25} />
-          </button>
+
+          {
+            updatingTask ? (
+              <>
+                <button
+                  type="button"
+                  className={styles.delete}
+                  onClick={handleCancelEditTask}
+                >
+                  <FiX size={25} />
+                </button>
+                <button type="submit" className={styles.save}>
+                  <FiCheck size={25} />
+                </button>
+              </>
+            ) : (
+              <button type="submit">
+                <FiPlus size={25} />
+              </button>
+            )
+          }
+
+
         </form>
 
         <section className={styles.tasksList}>
@@ -127,7 +192,7 @@ function Board({ data }: BoardProps) {
                   </span>
 
                   <div className={styles.taskActions}>
-                    <button>
+                    <button onClick={handleEditTask(task)}>
                       <FiEdit2 size={20} />
                       Editar
                     </button>
