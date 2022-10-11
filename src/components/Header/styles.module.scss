@@ -24,6 +24,11 @@
       color: #fff;
       padding: .5rem 1rem;
       cursor: pointer;
+      transition: transform 200ms;
+    }
+
+    a:hover {
+      transform: scale(1.05);
     }
   }
 }
