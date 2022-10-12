@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash2, FiX, FiCheck } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
 import { addDoc, deleteDoc, doc, getDocs, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore'
-import { format } from 'date-fns'
 
 import { createCollection } from '../../services/firebase'
 
@@ -13,22 +12,17 @@ import { SupportButton } from '../../components/SupportButton'
 
 import styles from './styles.module.scss'
 import { getToken } from 'next-auth/jwt'
-
-interface Task {
-  id: string
-  userId: string
-  userName: string
-  created: Date
-  task: string
-}
+import { parseTaskDocToJson } from '../../utils/parseFirebaseDocToJson'
+import { Task, TaskSnapshot } from '../../shared/interfaces/tasks.interfaces'
+import { formatDate } from '../../utils/formatDate'
 
 interface BoardProps {
-  data: string
+  data: Task[]
 }
 
 function Board({ data }: BoardProps) {
   const [taskInput, setTaskInput] = useState('')
-  const [tasks, setTasks] = useState<Task[]>(JSON.parse(data) ?? [])
+  const [tasks, setTasks] = useState<Task[]>(data ?? [])
   const [updatingTask, setUpdatingTask] = useState<Task | null>(null)
 
   const { data: session } = useSession()
@@ -130,10 +124,6 @@ function Board({ data }: BoardProps) {
     setUpdatingTask(null)
   }
 
-  function formatDate(date: Date) {
-    return format(new Date(date), 'dd MMMM yyyy')
-  }
-
   return (
     <>
       <Head>
@@ -230,14 +220,14 @@ export default Board
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const token = await getToken({ req })
 
-  const taskCollection = createCollection<Omit<Task, 'id'>>('tasks')
+  const taskCollection = createCollection<TaskSnapshot>('tasks')
   const tasksSnap = await getDocs(query(taskCollection, where('userId', '==', token?.sub), orderBy('created', 'asc')))
 
-  const tasksData: Task[] = tasksSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, created: (doc.data().created as unknown as Timestamp).toDate()}))
+  const tasksData = tasksSnap.docs.map(parseTaskDocToJson)
 
   return {
     props: {
-      data: JSON.stringify(tasksData)
+      data: tasksData
     }
   }
 }
