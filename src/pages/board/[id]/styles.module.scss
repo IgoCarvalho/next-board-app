@@ -1,0 +1,26 @@
+.container {
+  width: calc(100% - 30px);
+  max-width: 1120px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: lighten($app-primary-dark, 4);
+  border-radius: 0.6rem;
+
+  p {
+    color: #fff;
+    line-height: 150%;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: $app-secondary;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+
+  span {
+    color: #fff;
+  }
+}
