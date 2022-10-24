@@ -42,22 +42,7 @@ function Board({ data }: BoardProps) {
       return
     }
 
-    if (updatingTask) {
-
-      try {
-        await updateDoc(doc(taskCollection, updatingTask.id), { task: taskInput })
-        console.log(`TASK [${updatingTask.id}] ATUALIZADA:`)
-
-        updateTasksState(updatingTask.id, taskInput)
-        setTaskInput('')
-        setUpdatingTask(null)
-
-      } catch (error) {
-        console.log(`ERRO AO ATUALIZAR [${updatingTask.id}]:`, error)
-      }
-
-      return
-    }
+    if (await handleUpdateTask()) return
 
     const taskData: Omit<Task, 'id'> = {
       userId: session?.user?.id!,
@@ -80,6 +65,26 @@ function Board({ data }: BoardProps) {
     } catch (error) {
       console.log('DEU ALGO ERRADO: ', error)
     }
+  }
+
+  async function handleUpdateTask() {
+    if (updatingTask) {
+      try {
+        await updateDoc(doc(taskCollection, updatingTask.id), { task: taskInput })
+        console.log(`TASK [${updatingTask.id}] ATUALIZADA:`)
+
+        updateTasksState(updatingTask.id, taskInput)
+        setTaskInput('')
+        setUpdatingTask(null)
+
+      } catch (error) {
+        console.log(`ERRO AO ATUALIZAR [${updatingTask.id}]:`, error)
+      }
+
+      return true
+    }
+
+    return false
   }
 
   function handleDeleteTask(taskId: string) {
